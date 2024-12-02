@@ -17,7 +17,7 @@
 # [START managedkafka_create_cluster_parent]
 # [START managedkafka_create_cluster]
 resource "google_managed_kafka_cluster" "default" {
-  project    = data.google_project.default.project_id # Replace this with your project ID in quotes
+  provider   = google-beta
   cluster_id = "my-cluster-id"
   location   = "us-central1"
   capacity_config {
@@ -27,27 +27,14 @@ resource "google_managed_kafka_cluster" "default" {
   gcp_config {
     access_config {
       network_configs {
-        subnet = google_compute_subnetwork.default.id
+        subnet = "projects/${data.google_project.default.number}/regions/us-central1/subnetworks/default"
       }
     }
   }
 }
 # [END managedkafka_create_cluster]
 
-# [START managedkafka_subnetwork]
-resource "google_compute_subnetwork" "default" {
-  name          = "test-subnetwork"
-  ip_cidr_range = "10.2.0.0/16"
-  region        = "us-central1"
-  network       = google_compute_network.default.id
-}
-
-resource "google_compute_network" "default" {
-  name                    = "test-network"
-  auto_create_subnetworks = false
-}
-# [END managedkafka_subnetwork]
-
 data "google_project" "default" {
+  provider = google-beta
 }
 # [END managedkafka_create_cluster_parent]
